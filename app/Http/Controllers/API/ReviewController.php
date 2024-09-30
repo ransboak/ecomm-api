@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 class ReviewController extends Controller
 {
     //
-  // Add a new review to a product
     public function store(Request $request, $productId)
     {
         $validator = Validator::make($request->all(), [
@@ -24,13 +23,12 @@ class ReviewController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Ensure product exists
         $product = Product::findOrFail($productId);
 
-        // Create a new review
         $review = Review::create([
             'product_id' => $productId,
-            'customer_id' => 1, // assuming the user is authenticated
+            // 'customer_id' => auth()->user()->id, 
+            'customer_id' => 1,
             'rating' => $request->input('rating'),
             'comment' => $request->input('comment'),
         ]);
@@ -38,17 +36,14 @@ class ReviewController extends Controller
         return response()->json($review, 201);
     }
 
-    // Get all reviews for a specific product
     public function index($productId)
     {
-        // Ensure product exists
         $product = Product::find($productId);
 
         if (!$product) {
             return response()->json(['message' => 'Product not found.'], 404);
         }
 
-        // Retrieve all reviews for this product
         $reviews = $product->reviews()->with('customer')->get();
 
         return response()->json($reviews);
@@ -59,7 +54,6 @@ class ReviewController extends Controller
     {
         $review = Review::findOrFail($id);
 
-        // Ensure that the logged-in user is the one who made the review
         if (Auth::id() !== $review->customer_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -69,18 +63,15 @@ class ReviewController extends Controller
             'comment' => 'sometimes|nullable|string',
         ]);
 
-        // Update the review
         $review->update($request->only('rating', 'comment'));
 
         return response()->json($review);
     }
 
-    // Delete a review
     public function destroy($id)
     {
         $review = Review::findOrFail($id);
 
-        // Ensure that the logged-in user is the one who made the review
         if (Auth::id() !== $review->customer_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -88,6 +79,5 @@ class ReviewController extends Controller
         $review->delete();
 
         return response()->json(['message' => 'Review deleted successfully.']);
-    
-}
+    }
 }

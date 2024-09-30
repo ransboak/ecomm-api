@@ -75,17 +75,14 @@ class ProductController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Update product attributes
         $product->update($request->only('name', 'description', 'price', 'stock', 'category_id', 'brand_id'));
 
-        // Handle image uploads if provided
         if ($request->has('images')) {
-            // Delete existing images if necessary (optional)
             $product->images()->delete();
 
             foreach ($request->images as $image) {
-                $url = $image->store('products'); // Store the new image
-                $product->images()->create(['url' => $url]); // Create new product image record
+                $url = $image->store('products');
+                $product->images()->create(['url' => $url]);
             }
         }
 
@@ -96,12 +93,11 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    // Delete a product
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        $product->images()->delete(); // Delete associated images
-        $product->delete(); // Delete the product
+        $product->images()->delete();
+        $product->delete();
 
         return response()->json(['message' => 'Product deleted successfully.']);
     }
