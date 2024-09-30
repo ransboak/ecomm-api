@@ -29,8 +29,9 @@ class OrderController extends Controller
 
     // Create the order with the calculated total price
     $order = Order::create([
-        'user_id' => Auth::id(),
-        'customer_id' => Auth::user()->customer->id, // Ensure the user has a customer record
+        'user_id' => 1,
+        'customer_id' => 1, // Ensure the user has a customer record
+        // 'customer_id' => Auth::user()->customer->id, // Ensure the user has a customer record
         'total_price' => $totalPrice,
     ]);
 
@@ -40,6 +41,7 @@ class OrderController extends Controller
         $order->orderItems()->create([
             'product_id' => $item['product_id'],
             'quantity' => $item['quantity'],
+            'price' => $product->price
             // Additional fields like price can be added here
         ]);
     }
@@ -57,7 +59,10 @@ public function index()
 // Get a single order
 public function show($id)
 {
-    $order = Order::with('orderItems')->findOrFail($id);
+    $order = Order::with('orderItems')->find($id);
+    if (!$order) {
+        return response()->json(['message' => 'Order not found.'], 404);
+    }
     return response()->json($order);
 }
 

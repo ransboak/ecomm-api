@@ -70,7 +70,11 @@ class CartController extends Controller
     // Increment quantity of a cart item
     public function incrementQuantity($cartItemId)
     {
-        $cartItem = CartItem::findOrFail($cartItemId);
+        $cartItem = CartItem::find($cartItemId);
+
+        if(!$cartItem){
+            return response()->json(['message' => 'Cart Item not found']);
+        }
 
         // Increment the quantity
         $cartItem->quantity += 1;
@@ -82,7 +86,11 @@ class CartController extends Controller
     // Decrement quantity of a cart item
     public function decrementQuantity($cartItemId)
     {
-        $cartItem = CartItem::findOrFail($cartItemId);
+        $cartItem = CartItem::find($cartItemId);
+
+        if(!$cartItem){
+            return response()->json(['message' => 'Cart Item not found']);
+        }
 
         if ($cartItem->quantity > 1) {
             // Decrement the quantity

@@ -51,7 +51,11 @@ class ProductController extends Controller
     // Get a specific product
     public function show($id)
     {
-        $product = Product::with(['images', 'category', 'brand'])->findOrFail($id);
+        $product = Product::with(['images', 'category', 'brand'])->find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found.'], 404);
+        }
         return response()->json($product);
     }
 
@@ -84,6 +88,10 @@ class ProductController extends Controller
                 $product->images()->create(['url' => $url]); // Create new product image record
             }
         }
+
+        $product->name = $request->name;
+        $product->slug = Product::generateUniqueSlug($product->name);
+        $product->save();
 
         return response()->json($product);
     }

@@ -36,7 +36,11 @@ class ShippingController extends Controller
     public function show($orderId)
     {
         // Ensure the order exists
-        $order = Order::findOrFail($orderId);
+        $order = Order::find($orderId);
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found.'], 404);
+        }
 
         // Retrieve the shipping details for this order
         $shipping = Shipping::where('order_id', $order->id)->firstOrFail();

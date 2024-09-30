@@ -42,7 +42,11 @@ class ReviewController extends Controller
     public function index($productId)
     {
         // Ensure product exists
-        $product = Product::findOrFail($productId);
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found.'], 404);
+        }
 
         // Retrieve all reviews for this product
         $reviews = $product->reviews()->with('customer')->get();

@@ -144,11 +144,19 @@ Route::put('/shippings/{id}', [ShippingController::class, 'update']);
 Route::delete('/shippings/{id}', [ShippingController::class, 'destroy']);
 
 
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::post('/cart/add', [CartController::class, 'addToCart']);
+//     Route::get('/cart/{customerId}', [CartController::class, 'viewCart']);
+//     Route::patch('/cart/item/{cartItemId}/increment', [CartController::class, 'incrementQuantity']);
+//     Route::patch('/cart/item/{cartItemId}/decrement', [CartController::class, 'decrementQuantity']);
+//     Route::delete('/cart/item/{cartItemId}', [CartController::class, 'removeItem']);
+//     Route::delete('/cart/{customerId}/clear', [CartController::class, 'clearCart']);
+// });
+// Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cart/add', [CartController::class, 'addToCart']);
     Route::get('/cart/{customerId}', [CartController::class, 'viewCart']);
     Route::patch('/cart/item/{cartItemId}/increment', [CartController::class, 'incrementQuantity']);
     Route::patch('/cart/item/{cartItemId}/decrement', [CartController::class, 'decrementQuantity']);
     Route::delete('/cart/item/{cartItemId}', [CartController::class, 'removeItem']);
     Route::delete('/cart/{customerId}/clear', [CartController::class, 'clearCart']);
-});
+// });
