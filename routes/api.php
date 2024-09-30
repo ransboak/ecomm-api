@@ -8,6 +8,7 @@ use App\Http\Controllers\API\DiscountController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\API\ShippingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -132,3 +133,11 @@ Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
 Route::put('/reviews/{id}', [ReviewController::class, 'update']);
 Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+
+
+//SHIPPING
+// Protected routes (requires authentication)
+Route::post('/orders/{orderId}/shipping', [ShippingController::class, 'store']);
+Route::get('/orders/{orderId}/shipping', [ShippingController::class, 'show']);
+Route::put('/shippings/{id}', [ShippingController::class, 'update']);
+Route::delete('/shippings/{id}', [ShippingController::class, 'destroy']);
