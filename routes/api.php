@@ -131,4 +131,4 @@ Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
 // Customer routes (protected by auth)
 Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
 Route::put('/reviews/{id}', [ReviewController::class, 'update']);
-Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);   
+Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);

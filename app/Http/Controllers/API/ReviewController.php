@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ReviewController extends Controller
 {
@@ -14,10 +15,14 @@ class ReviewController extends Controller
   // Add a new review to a product
     public function store(Request $request, $productId)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Ensure product exists
         $product = Product::findOrFail($productId);
