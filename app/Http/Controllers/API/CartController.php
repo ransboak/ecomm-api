@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -10,70 +11,111 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     //
-    public function index()
-    {
-        $cart = auth()->user()->cart()->with('items.product')->firstOrFail();
-
-        return response()->json($cart);
-    }
-
     // Add a product to the cart
-    public function add(Request $request)
+    public function addToCart(Request $request)
     {
         $request->validate([
+            'customer_id' => 'required|exists:customers,id',
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1'
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = auth()->user()->cart()->firstOrCreate([
-            'user_id' => auth()->id()
-        ]);
+        $customerId = $request->input('customer_id');
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity');
+
+        // Get or create the cart for the customer
+        $cart = Cart::firstOrCreate(['customer_id' => $customerId]);
 
         // Check if the product is already in the cart
-        $cartItem = $cart->items()->where('product_id', $request->product_id)->first();
+        $cartItem = CartItem::where('cart_id', $cart->id)->where('product_id', $productId)->first();
 
         if ($cartItem) {
-            // Update quantity if the item already exists
-            $cartItem->update([
-                'quantity' => $cartItem->quantity + $request->quantity
-            ]);
+            // If product already exists in the cart, update the quantity
+            $cartItem->quantity += $quantity;
+            $cartItem->save();
         } else {
-            // Otherwise, create a new cart item
-            $product = Product::find($request->product_id);
-
-            $cart->items()->create([
-                'product_id' => $request->product_id,
-                'quantity' => $request->quantity,
-                'price' => $product->price
+            // Otherwise, add the product to the cart
+            CartItem::create([
+                'cart_id' => $cart->id,
+                'product_id' => $productId,
+                'quantity' => $quantity,
             ]);
         }
 
-        return response()->json(['message' => 'Product added to cart successfully']);
+        return response()->json(['message' => 'Product added to cart successfully.']);
     }
 
-    // Remove a product from the cart
-    public function remove($id)
+    // View all items in the cart
+    public function viewCart($customerId)
     {
-        $cart = auth()->user()->cart()->firstOrFail();
-        $cartItem = $cart->items()->where('id', $id)->firstOrFail();
+        // Get the customer's cart
+        $cart = Cart::where('customer_id', $customerId)->with('items.product')->first();
 
+        if (!$cart) {
+            return response()->json(['message' => 'Cart is empty.'], 404);
+        }
+
+        // Calculate the total price of the cart
+        $totalPrice = $cart->items->sum(function ($item) {
+            return $item->quantity * $item->product->price;
+        });
+
+        return response()->json([
+            'cart_items' => $cart->items,
+            'total_price' => $totalPrice,
+        ]);
+    }
+
+    // Increment quantity of a cart item
+    public function incrementQuantity($cartItemId)
+    {
+        $cartItem = CartItem::findOrFail($cartItemId);
+
+        // Increment the quantity
+        $cartItem->quantity += 1;
+        $cartItem->save();
+
+        return response()->json(['message' => 'Item quantity incremented successfully.', 'cart_item' => $cartItem]);
+    }
+
+    // Decrement quantity of a cart item
+    public function decrementQuantity($cartItemId)
+    {
+        $cartItem = CartItem::findOrFail($cartItemId);
+
+        if ($cartItem->quantity > 1) {
+            // Decrement the quantity
+            $cartItem->quantity -= 1;
+            $cartItem->save();
+
+            return response()->json(['message' => 'Item quantity decremented successfully.', 'cart_item' => $cartItem]);
+        } else {
+            // If quantity is 1, remove the item from the cart
+            $cartItem->delete();
+
+            return response()->json(['message' => 'Item removed from cart.']);
+        }
+    }
+
+    // Remove an item from the cart
+    public function removeItem($cartItemId)
+    {
+        $cartItem = CartItem::findOrFail($cartItemId);
         $cartItem->delete();
 
-        return response()->json(['message' => 'Product removed from cart']);
+        return response()->json(['message' => 'Item removed from cart successfully.']);
     }
 
-    // Update the quantity of an item in the cart
-    public function updateItemQuantity(Request $request, $id)
+    // Clear the entire cart
+    public function clearCart($customerId)
     {
-        $request->validate([
-            'quantity' => 'required|integer|min:1'
-        ]);
+        $cart = Cart::where('customer_id', $customerId)->first();
 
-        $cartItem = CartItem::where('id', $id)->firstOrFail();
-        $cartItem->update([
-            'quantity' => $request->quantity
-        ]);
+        if ($cart) {
+            $cart->items()->delete();
+        }
 
-        return response()->json(['message' => 'Cart item quantity updated']);
+        return response()->json(['message' => 'Cart cleared successfully.']);
     }
 }

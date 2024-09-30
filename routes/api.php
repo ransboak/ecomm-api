@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BrandController;
+use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\DiscountController;
@@ -141,3 +142,13 @@ Route::post('/orders/{orderId}/shipping', [ShippingController::class, 'store']);
 Route::get('/orders/{orderId}/shipping', [ShippingController::class, 'show']);
 Route::put('/shippings/{id}', [ShippingController::class, 'update']);
 Route::delete('/shippings/{id}', [ShippingController::class, 'destroy']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/cart/add', [CartController::class, 'addToCart']);
+    Route::get('/cart/{customerId}', [CartController::class, 'viewCart']);
+    Route::patch('/cart/item/{cartItemId}/increment', [CartController::class, 'incrementQuantity']);
+    Route::patch('/cart/item/{cartItemId}/decrement', [CartController::class, 'decrementQuantity']);
+    Route::delete('/cart/item/{cartItemId}', [CartController::class, 'removeItem']);
+    Route::delete('/cart/{customerId}/clear', [CartController::class, 'clearCart']);
+});
