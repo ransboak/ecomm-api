@@ -14,7 +14,6 @@ class CustomerController extends Controller
         return response()->json(auth()->user()->customer, 200);
     }
 
-    // Update customer profile
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [

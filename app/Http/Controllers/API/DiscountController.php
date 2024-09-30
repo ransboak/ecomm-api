@@ -28,7 +28,7 @@ class DiscountController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:255|unique:discounts',
-            'discount' => 'required|numeric|min:0|max:100', // Assuming percentage
+            'discount' => 'required|numeric|min:0|max:100',
             'max_uses' => 'required|integer|min:1',
             'expires_at' => 'nullable|date|after:today',
         ]);
@@ -42,7 +42,6 @@ class DiscountController extends Controller
         return response()->json($discount, 201);
     }
 
-    // Update a discount by ID
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -65,7 +64,6 @@ class DiscountController extends Controller
         return response()->json($discount, 200);
     }
 
-    // Delete a discount by ID
     public function destroy($id)
     {
         $discount = Discount::find($id);
@@ -77,14 +75,12 @@ class DiscountController extends Controller
         return response()->json(['message' => 'Discount deleted successfully.'], 200);
     }
 
-    // List all discounts
     public function index()
     {
         $discounts = Discount::all();
         return response()->json($discounts, 200);
     }
 
-    // Retrieve a specific discount by ID
     public function show($id)
     {
         $discount = Discount::find($id);
@@ -95,7 +91,6 @@ class DiscountController extends Controller
         return response()->json($discount, 200);
     }
 
-    // Apply a discount code
     public function apply(Request $request)
     {
         $validator = Validator::make($request->all(), [

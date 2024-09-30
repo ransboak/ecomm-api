@@ -19,30 +19,26 @@ class OrderController extends Controller
         'items.*.quantity' => 'required|integer|min:1',
     ]);
 
-    $totalPrice = 0; // Initialize total price
+    $totalPrice = 0;
 
-    // Calculate total price based on items
     foreach ($request->items as $item) {
-        $product = Product::findOrFail($item['product_id']); // Get the product
-        $totalPrice += $product->price * $item['quantity']; // Calculate total price
+        $product = Product::findOrFail($item['product_id']);
+        $totalPrice += $product->price * $item['quantity'];
     }
 
-    // Create the order with the calculated total price
     $order = Order::create([
         'user_id' => 1,
-        'customer_id' => 1, // Ensure the user has a customer record
+        'customer_id' => 1,
         // 'customer_id' => Auth::user()->customer->id, // Ensure the user has a customer record
         'total_price' => $totalPrice,
     ]);
 
-    // Create order items
     foreach ($request->items as $item) {
         $product = Product::findOrFail($item['product_id']);
         $order->orderItems()->create([
             'product_id' => $item['product_id'],
             'quantity' => $item['quantity'],
             'price' => $product->price
-            // Additional fields like price can be added here
         ]);
     }
 
