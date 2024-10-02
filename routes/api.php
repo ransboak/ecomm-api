@@ -28,43 +28,82 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    // Products
-    // Route::apiResource('products', ProductController::class);
+// Route::middleware('auth:sanctum')->group(function () {
+//     // Users
+//     Route::get('user/profile', [AuthController::class, 'profile']);
 
-    // // Orders
-    // Route::apiResource('orders', OrderController::class);
-    // Route::get('orders/{id}/track', [OrderController::class, 'track']);
+//     Route::post('logout', [AuthController::class, 'logout']);
 
-    // // Cart
-    // Route::get('cart', [CartController::class, 'index']);
-    // Route::post('cart', [CartController::class, 'add']);
-    // Route::delete('cart/{id}', [CartController::class, 'remove']);
 
-    // // Coupons
-    // Route::post('coupons/apply', [CouponController::class, 'apply']);
+//     //CATEGORIES
 
-    // Users
-    Route::get('user/profile', [AuthController::class, 'profile']);
+//     Route::post('categories', [CategoryController::class, 'store'])->middleware('admin');; // Admin only
+//     Route::put('categories/{id}', [CategoryController::class, 'update'])->middleware('admin');; // Admin only
+//     Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->middleware('admin');; // Admin only
 
-    Route::post('logout', [AuthController::class, 'logout']);
+//     //BRANDS
+//     Route::post('brands', [BrandController::class, 'store'])->middleware('admin'); // Admin only
+//     Route::put('brands/{id}', [BrandController::class, 'update'])->middleware('admin'); // Admin only
+//     Route::delete('brands/{id}', [BrandController::class, 'destroy'])->middleware('admin'); // Admin only
 
-    // Route::post('categories', [CategoryController::class, 'store'])->middleware('admin'); // Admin only
-    // Route::put('categories/{id}', [CategoryController::class, 'update'])->middleware('admin'); // Admin only
-    // Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->middleware('admin'); // Admin only
-});
+//     //DISCOUNTS
+//     Route::post('discounts', [DiscountController::class, 'store'])->middleware('admin'); // Admin only
+//     Route::put('discounts/{id}', [DiscountController::class, 'update'])->middleware('admin'); // Admin only
+//     Route::delete('discounts/{id}', [DiscountController::class, 'destroy'])->middleware('admin'); // Admin only
+
+
+//     //CUSTOMER
+//     Route::get('customer/profile', [CustomerController::class, 'profile']);
+//     Route::put('customer/profile', [CustomerController::class, 'update']);
+
+
+//     //ORDERS Authenticate 
+//     Route::post('orders', [OrderController::class, 'create']);
+//     Route::get('orders', [OrderController::class, 'index']);
+//     Route::get('orders/{id}', [OrderController::class, 'show']);
+//     Route::put('orders/{id}', [OrderController::class, 'update']);
+//     Route::delete('orders/{id}', [OrderController::class, 'destroy']);
+
+//     //PRODUCTS routes (protected by middleware)
+//     Route::post('/products', [ProductController::class, 'create'])->middleware('admin');
+//     Route::put('/products/{id}', [ProductController::class, 'update'])->middleware('admin');
+//     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->middleware('admin');
+
+//     //REVIEWS
+//     // Customer routes (protected by auth)
+//     Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
+//     Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+//     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+
+//     //SHIPPING
+//     Route::post('/orders/{orderId}/shipping', [ShippingController::class, 'store']);
+//     Route::get('/orders/{orderId}/shipping', [ShippingController::class, 'show']);
+//     Route::put('/shippings/{id}', [ShippingController::class, 'update']);
+//     Route::delete('/shippings/{id}', [ShippingController::class, 'destroy']);
+
+
+//     //CART
+//     Route::post('/cart/add', [CartController::class, 'addToCart']);
+//     Route::get('/cart/{customerId}', [CartController::class, 'viewCart']);
+//     Route::patch('/cart/item/{cartItemId}/increment', [CartController::class, 'incrementQuantity']);
+//     Route::patch('/cart/item/{cartItemId}/decrement', [CartController::class, 'decrementQuantity']);
+//     Route::delete('/cart/item/{cartItemId}', [CartController::class, 'removeItem']);
+//     Route::delete('/cart/{customerId}/clear', [CartController::class, 'clearCart']);
+
+//     // Route::post('categories', [CategoryController::class, 'store'])->middleware('admin'); // Admin only
+//     // Route::put('categories/{id}', [CategoryController::class, 'update'])->middleware('admin'); // Admin only
+//     // Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->middleware('admin'); // Admin only
+// });
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::get('user/profile', [AuthController::class, 'profile']);
+Route::post('logout', [AuthController::class, 'logout']);
 
 //CATEGORIES
 Route::get('categories', [CategoryController::class, 'index']); // Public access
 Route::get('categories/{id}', [CategoryController::class, 'show']); // Public access
 
-
-// Route::post('categories', [CategoryController::class, 'store'])->middleware('admin'); ; // Admin only
-//     Route::put('categories/{id}', [CategoryController::class, 'update'])->middleware('admin'); ; // Admin only
-//     Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->middleware('admin'); ; // Admin only
 
 Route::post('categories', [CategoryController::class, 'store']); // Admin only
 Route::put('categories/{id}', [CategoryController::class, 'update']); // Admin only
@@ -76,9 +115,6 @@ Route::get('brands', [BrandController::class, 'index']); // Public access
 Route::get('brands/{id}', [BrandController::class, 'show']); // Public access
 
 
-// Route::post('brands', [BrandController::class, 'store'])->middleware('admin'); // Admin only
-//     Route::put('brands/{id}', [BrandController::class, 'update'])->middleware('admin'); // Admin only
-//     Route::delete('brands/{id}', [BrandController::class, 'destroy'])->middleware('admin'); // Admin only
 
 Route::post('brands', [BrandController::class, 'store']); // Admin only
 Route::put('brands/{id}', [BrandController::class, 'update']); // Admin only
@@ -92,9 +128,6 @@ Route::get('discounts', [DiscountController::class, 'index']); // Public access
 Route::get('discounts/{id}', [DiscountController::class, 'show']); // Public access
 Route::post('discounts/apply', [DiscountController::class, 'apply']); // Public access
 
-// Route::post('discounts', [DiscountController::class, 'store'])->middleware('admin'); // Admin only
-// Route::put('discounts/{id}', [DiscountController::class, 'update'])->middleware('admin'); // Admin only
-// Route::delete('discounts/{id}', [DiscountController::class, 'destroy'])->middleware('admin'); // Admin only
 
 
 Route::post('discounts', [DiscountController::class, 'store']); // Admin only
@@ -118,9 +151,6 @@ Route::delete('orders/{id}', [OrderController::class, 'destroy']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
-// Route::post('/products', [ProductController::class, 'create'])->middleware('admin');
-// Route::put('/products/{id}', [ProductController::class, 'update'])->middleware('admin');
-// Route::delete('/products/{id}', [ProductController::class, 'destroy'])->middleware('admin');
 // Admin routes (protected by middleware)
 Route::post('/products', [ProductController::class, 'create']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
@@ -144,19 +174,10 @@ Route::put('/shippings/{id}', [ShippingController::class, 'update']);
 Route::delete('/shippings/{id}', [ShippingController::class, 'destroy']);
 
 
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::post('/cart/add', [CartController::class, 'addToCart']);
-//     Route::get('/cart/{customerId}', [CartController::class, 'viewCart']);
-//     Route::patch('/cart/item/{cartItemId}/increment', [CartController::class, 'incrementQuantity']);
-//     Route::patch('/cart/item/{cartItemId}/decrement', [CartController::class, 'decrementQuantity']);
-//     Route::delete('/cart/item/{cartItemId}', [CartController::class, 'removeItem']);
-//     Route::delete('/cart/{customerId}/clear', [CartController::class, 'clearCart']);
-// });
-// Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/cart/add', [CartController::class, 'addToCart']);
-    Route::get('/cart/{customerId}', [CartController::class, 'viewCart']);
-    Route::patch('/cart/item/{cartItemId}/increment', [CartController::class, 'incrementQuantity']);
-    Route::patch('/cart/item/{cartItemId}/decrement', [CartController::class, 'decrementQuantity']);
-    Route::delete('/cart/item/{cartItemId}', [CartController::class, 'removeItem']);
-    Route::delete('/cart/{customerId}/clear', [CartController::class, 'clearCart']);
-// });
+//CART
+Route::post('/cart/add', [CartController::class, 'addToCart']);
+Route::get('/cart/{customerId}', [CartController::class, 'viewCart']);
+Route::patch('/cart/item/{cartItemId}/increment', [CartController::class, 'incrementQuantity']);
+Route::patch('/cart/item/{cartItemId}/decrement', [CartController::class, 'decrementQuantity']);
+Route::delete('/cart/item/{cartItemId}', [CartController::class, 'removeItem']);
+Route::delete('/cart/{customerId}/clear', [CartController::class, 'clearCart']);
